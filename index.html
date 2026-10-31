@@ -257,43 +257,203 @@
 								</ul>
 
 								<div id="crime-story-content">
-									<h2>Project Overview</h2>
-									<p>Developed an interactive predictive analytics dashboard to analyse reported crime patterns in Northern Ireland and forecast future crime trends. The project used historical data from Data.police.uk covering May 2022 to April 2025. It was designed to support data-driven resource allocation, public-safety planning, and proactive decision-making.</p>
-									<h2>Project Resources</h2>
+									<h2>Executive Summary</h2>
+									<p>This report also shows the business analysis process used to build a predictive crime analytics dashboard for Northern Ireland, turning three years of public police data into hotspot maps, seasonal trends and a six-month forecast.</p>
 									<ul>
-										<li><a href="https://police-dashboard-v2-vkmlvvyctcsydrejinw5m7.streamlit.app" target="_blank" rel="noopener noreferrer">View the live dashboard</a></li>
-										<li><a href="https://github.com/DennisDarkwa1/police-dashboard-v2" target="_blank" rel="noopener noreferrer">View the source code on GitHub</a></li>
+										<li><strong>Problem:</strong> decision-makers in policing and public safety need to know where and when crime is likely to occur, but raw monthly police data does not show this directly.</li>
+										<li><strong>Solution:</strong> an interactive Streamlit dashboard built on cleaned Data.police.uk records (May 2022 to April 2025), combining exploratory analysis with an ARIMA(1,1,1) forecast.</li>
+										<li><strong>Outcome:</strong> the dashboard showed anti-social behaviour as the most reported crime, Belfast and urban centres as the main hotspots, and forecast rises in violent crime and burglary in colder months.</li>
 									</ul>
-									<h2>Business Problem</h2>
-									<p>Law-enforcement and public-safety stakeholders need to understand where and when crime occurs so that resources can be allocated more effectively. This project addressed the challenge by combining historical crime analysis, location-based visualisation, seasonal trend analysis, and six-month forecasting.</p>
-									<h2>Objectives</h2>
+									<p>The work followed CRISP-DM, which maps closely onto the standard BA lifecycle. This was an academic project using public data, so stakeholder needs were defined from the business problem rather than gathered in interviews.</p>
+
+									<h2>Process at a Glance</h2>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>#</th><th>BA stage</th><th>CRISP-DM phase</th><th>What I did</th><th>Output</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>1</td><td>Understand the business context</td><td>Business Understanding</td><td>Framed crime prediction as a resource-allocation problem for public safety</td><td>Context summary</td></tr>
+												<tr><td>2</td><td>Define the problem</td><td>Business Understanding</td><td>Set the goal: understand crime patterns and forecast trends</td><td>Problem statement, objectives</td></tr>
+												<tr><td>3</td><td>Stakeholder analysis</td><td>Business Understanding</td><td>Identified police, policymakers and public safety planners as users</td><td>Stakeholder map</td></tr>
+												<tr><td>4</td><td>Requirements</td><td>Business Understanding</td><td>Derived what the dashboard must show from the decisions users make</td><td>Requirements and scope</td></tr>
+												<tr><td>5</td><td>As-is analysis</td><td>Data Understanding and Preparation</td><td>Combined, cleaned and explored three years of police data</td><td>Clean dataset, EDA findings</td></tr>
+												<tr><td>6</td><td>To-be design and gaps</td><td>Modelling / Deployment</td><td>Designed a dashboard linking patterns to forecasts</td><td>Dashboard design</td></tr>
+												<tr><td>7</td><td>Options and recommendation</td><td>Modelling</td><td>Selected ARIMA(1,1,1) using ACF and PACF</td><td>Forecasting model</td></tr>
+												<tr><td>8</td><td>Implementation support</td><td>Modelling / Deployment</td><td>Built and deployed the Streamlit dashboard</td><td>Live dashboard</td></tr>
+												<tr><td>9</td><td>Evaluate and monitor</td><td>Evaluation</td><td>Tested forecasts with MAE, RMSE and MAPE; reviewed limitations</td><td>Evaluation findings, next steps</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>1. Understand the Business Context</h2>
+									<p>Police forces and public bodies face growing pressure to make data-driven decisions about where to deploy limited resources. Predictive analytics can help by using historical data to anticipate future crime trends.</p>
+									<p>Key context I established:</p>
 									<ul>
-										<li>Identify the most frequently reported crime categories.</li>
-										<li>Detect geographical crime hotspots.</li>
-										<li>Analyse seasonal and monthly crime patterns.</li>
-										<li>Forecast crime trends for the following six months.</li>
-										<li>Present the findings through an interactive dashboard.</li>
-										<li>Demonstrate how predictive analytics can support public-safety planning.</li>
+										<li><strong>Public data is available:</strong> Data.police.uk publishes monthly crime records for Northern Ireland, with crime type, month, location and coordinates.</li>
+										<li><strong>Decisions are about resources:</strong> the main use of crime insight is deciding where and when to focus policing, patrols and prevention.</li>
+										<li><strong>Ethics and law matter:</strong> crime data is sensitive, so GDPR principles such as data minimisation and the risk of bias in predictive policing shape what is appropriate.</li>
 									</ul>
-									<h2>Methodology</h2>
-									<p>Applied the CRISP-DM framework across the project:</p>
+
+									<h2>2. Define the Problem and Root Cause</h2>
+									<p><strong>Problem statement:</strong> decision-makers in Northern Ireland had no single, accessible view of where and when crime happens, or how it is likely to change, to guide resource allocation.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Symptom</th><th>Underlying cause</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Crime data is hard to interpret</td><td>Raw records are spread across monthly CSV files</td></tr>
+												<tr><td>Hotspots are not obvious</td><td>Location data is not mapped or aggregated</td></tr>
+												<tr><td>Seasonal peaks are missed</td><td>Records are not analysed over time</td></tr>
+												<tr><td>Planning is reactive</td><td>No forecast of future crime levels</td></tr>
+											</tbody>
+										</table>
+									</div>
+									<p>The root cause was not a lack of data but the lack of a tool that turns raw records into patterns and forecasts.</p>
+									<p><strong>Objectives:</strong></p>
 									<ol>
-										<li>Business understanding.</li>
-										<li>Data understanding.</li>
-										<li>Data preparation.</li>
-										<li>Exploratory data analysis.</li>
-										<li>Predictive modelling.</li>
-										<li>Model evaluation and deployment.</li>
+										<li>Clean and combine the police data into one reliable dataset</li>
+										<li>Reveal crime patterns by type, location and season</li>
+										<li>Forecast crime for the next six months</li>
+										<li>Present the results in an interactive dashboard for non-technical users</li>
 									</ol>
-									<p>The dataset was cleaned by removing duplicates, eliminating irrelevant fields, addressing incomplete records, filtering vague location entries, and converting date fields into a suitable format for time-series analysis.</p>
-									<h2>Key Insights</h2>
+
+									<h2>3. Stakeholder Analysis</h2>
+									<p>I identified the groups who would use or be affected by the dashboard and what each needs. These were defined from the business problem, as the project used public data without direct stakeholder access.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Stakeholder</th><th>Role</th><th>Main need</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Police and law enforcement</td><td>Primary users</td><td>Where and when to deploy officers and patrols</td></tr>
+												<tr><td>Policymakers</td><td>Decision-makers</td><td>Evidence to target crime prevention programmes</td></tr>
+												<tr><td>Public safety planners</td><td>Users</td><td>Seasonal and local trends to plan interventions</td></tr>
+												<tr><td>The public</td><td>Affected group</td><td>Fair, privacy-respecting use of crime data</td></tr>
+											</tbody>
+										</table>
+									</div>
+									<p>Including the public as a stakeholder kept ethics and GDPR in view throughout the project.</p>
+
+									<h2>4. Requirements Elicitation</h2>
+									<p>I derived requirements from the decisions each stakeholder group needs to make.</p>
+									<p><strong>Functional requirements</strong></p>
 									<ul>
-										<li>Anti-social behaviour was the most frequently reported crime category.</li>
-										<li>Belfast and other urban areas appeared as key crime hotspots.</li>
-										<li>Crime levels varied across seasons and months.</li>
-										<li>The ARIMA model forecast moderate fluctuations in future crime levels.</li>
-										<li>Violent crime and burglary were forecast to increase during colder months.</li>
-										<li>The dashboard enabled users to examine crime types, locations, seasonal patterns, and future forecasts interactively.</li>
+										<li>Show the distribution of crime by type</li>
+										<li>Map crime hotspots across Northern Ireland</li>
+										<li>Show seasonal and monthly trends</li>
+										<li>Rank the top crime locations</li>
+										<li>Forecast crime levels for the next six months</li>
+									</ul>
+									<p><strong>Non-functional requirements</strong></p>
+									<ul>
+										<li>Interactive and easy for non-technical users to explore</li>
+										<li>Built on clean, consistent data</li>
+										<li>Accessible online through a web link</li>
+										<li>Uses only data needed for the purpose, in line with GDPR data minimisation</li>
+									</ul>
+									<p><strong>Scope:</strong> Data.police.uk records for Northern Ireland from May 2022 to April 2025. Socio-economic data and policing interventions were outside scope.</p>
+
+									<h2>5. Current State (As-Is) Analysis</h2>
+									<p>The current state was raw monthly CSV files with no combined view. I prepared and explored the data to understand what it could reveal.</p>
+									<p><strong>Data preparation</strong></p>
+									<ol>
+										<li><strong>Combined</strong> the monthly CSV files into one dataframe in Python.</li>
+										<li><strong>Removed duplicates</strong> with <code>drop_duplicates()</code> to prevent skewed counts.</li>
+										<li><strong>Dropped irrelevant columns</strong> such as Crime ID, Reported by, LSOA code, LSOA name, Last outcome category and Context.</li>
+										<li><strong>Cleaned locations</strong> by removing vague entries such as “On or near” and “No location”.</li>
+										<li><strong>Converted dates</strong> to datetime with <code>pandas.to_datetime()</code> for time series analysis.</li>
+									</ol>
+									<p><strong>Exploratory findings</strong></p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Analysis</th><th>Finding</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Crime by type (bar chart)</td><td>Anti-social behaviour was the most reported crime, followed by violence and sexual offences</td></tr>
+												<tr><td>Hotspot heatmap</td><td>Crime concentrated in Belfast and other urban centres</td></tr>
+												<tr><td>Crime by season</td><td>Clear seasonal peaks, with more crime in colder months</td></tr>
+												<tr><td>Top 10 locations</td><td>Main streets recorded the highest number of crimes</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>6. Future State (To-Be) Design and Gap Analysis</h2>
+									<p>The future state is one interactive dashboard where users can see crime patterns and future trends together.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Gap (as-is)</th><th>Design response (to-be)</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Data spread across monthly files</td><td>One cleaned, combined dataset behind the dashboard</td></tr>
+												<tr><td>Crime mix unclear</td><td>Bar chart of crime by type</td></tr>
+												<tr><td>Hotspots not visible</td><td>Heatmap of crime across Northern Ireland</td></tr>
+												<tr><td>Seasonal peaks missed</td><td>Crime-by-season view</td></tr>
+												<tr><td>No local focus</td><td>Top 10 crime locations chart</td></tr>
+												<tr><td>Planning is reactive</td><td>Six-month ARIMA forecast line chart</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>7. Options Evaluation and Recommendation</h2>
+									<p><strong>Recommendation: an ARIMA(1,1,1) time series model, delivered through a Python and Streamlit dashboard.</strong></p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Decision</th><th>Choice</th><th>Why</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Forecasting approach</td><td>ARIMA time series model</td><td>Suited to monthly data with trend and seasonality; well established and interpretable</td></tr>
+												<tr><td>Model order</td><td>ARIMA(1,1,1)</td><td>Selected after stationarity testing, using ACF and PACF plots</td></tr>
+												<tr><td>Delivery platform</td><td>Streamlit</td><td>Turns Python analysis into a shareable web dashboard quickly</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>8. Implementation Support</h2>
+									<p>I built and deployed the full solution myself in Python.</p>
+									<ul>
+										<li><strong>Data pipeline:</strong> wrote the code to combine, clean and format the police data.</li>
+										<li><strong>Time series preparation:</strong> aggregated crimes by month and tested for stationarity before modelling.</li>
+										<li><strong>Model build:</strong> fitted the ARIMA(1,1,1) model and produced a six-month forecast.</li>
+										<li><strong>Dashboard build:</strong> brought the EDA charts and forecast into one interactive Streamlit app.</li>
+										<li><strong>Deployment:</strong> published the dashboard online so stakeholders can open it from a link, with no software to install.</li>
+									</ul>
+
+									<h2>9. Evaluation and Monitoring</h2>
+									<p>The dashboard met all four objectives, and the forecast performed reasonably well, with some error expected in real-world use.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Objective</th><th>Evidence</th><th>Result</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>One reliable dataset</td><td>Duplicates, irrelevant columns and vague locations removed; dates standardised</td><td>Met</td></tr>
+												<tr><td>Reveal crime patterns</td><td>EDA showed crime mix, Belfast hotspots, seasonal peaks and top locations</td><td>Met</td></tr>
+												<tr><td>Forecast six months ahead</td><td>ARIMA forecast predicted rises in violent crime and burglary in colder months; MAE, RMSE and MAPE indicated a good fit</td><td>Met</td></tr>
+												<tr><td>Interactive dashboard</td><td>Deployed online through Streamlit</td><td>Met</td></tr>
+											</tbody>
+										</table>
+									</div>
+									<p><strong>Limitations identified</strong></p>
+									<ul>
+										<li>Missing values in Location and Outcome category could introduce bias.</li>
+										<li>Some crimes, such as domestic violence and sexual assault, are under-reported.</li>
+										<li>Data covers Northern Ireland only, which limits how far findings generalise.</li>
+										<li>No socio-economic or policing data, so the model cannot explain external influences.</li>
+										<li>ARIMA relies on past trends and cannot anticipate sudden shocks.</li>
+									</ul>
+
+									<h2>Conclusion</h2>
+									<p>A structured BA process turned scattered public crime records into a dashboard that shows where, when and what kind of crime is likely, giving decision-makers a basis for proactive resource allocation.</p>
+
+									<h2>Live Dashboard</h2>
+									<ul>
+										<li><a href="https://police-dashboard-v2-vkmlvvyctcsydrejinw5m7.streamlit.app" target="_blank" rel="noopener noreferrer">Try the Predictive Crime Analytics Dashboard</a></li>
+										<li><a href="https://github.com/DennisDarkwa1/police-dashboard-v2" target="_blank" rel="noopener noreferrer">View the source code on GitHub</a></li>
 									</ul>
 								</div>
 							</section>
