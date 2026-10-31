@@ -58,53 +58,197 @@
 								</ul>
 
 								<div id="full-story-content">
-									<h2>Project Overview</h2>
-									<p>The primary objective of this project is to design and implement an interactive dashboard calculator to improve operational performance at Mechapres. Specifically, the project aims to develop a tailored dashboard that supports production and cost management, automate key operational calculations, and present insights through intuitive and easily interpretable visualizations. In addition, the project seeks to assess the effectiveness of the dashboard in improving decision accuracy, reducing computational time, and supporting efficient resource utilization.</p>
-									<h2>Project Resources</h2>
+									<h2>Executive Summary</h2>
+									<p>This report shows how I applied a nine-stage business analysis process to replace Mechapres’ manual heat pump feasibility estimates with a guided Streamlit calculator.</p>
 									<ul>
-										<li><a href="https://mechapres-dashboard-nntjrpu6ecrwzjwqohjhwr.streamlit.app/" target="_blank" rel="noopener noreferrer">View the live dashboard</a></li>
+										<li><strong>Problem:</strong> feasibility estimates were done by hand across disconnected tools, making them slow, error-prone and inconsistent.</li>
+										<li><strong>Solution:</strong> an interactive calculator that automates the calculations and shows payback, IRR, NPV and CO₂ savings as low-to-high ranges.</li>
+										<li><strong>Outcome:</strong> after deployment, less time spent on manual calculations, more consistent reporting and clearer visibility of cost drivers.</li>
+									</ul>
+									<p>The work followed CRISP-DM, which maps closely onto the standard BA lifecycle. The stages ran iteratively: findings in testing fed back into design several times.</p>
+
+									<h2>Process at a Glance</h2>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>#</th><th>BA stage</th><th>CRISP-DM phase</th><th>What I did</th><th>Output</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>1</td><td>Understand the business context</td><td>Business Understanding</td><td>Reviewed Mechapres’ market, margins and how feasibility drives sales</td><td>Context summary</td></tr>
+												<tr><td>2</td><td>Define the problem</td><td>Business Understanding</td><td>Separated symptoms from root cause; set success criteria</td><td>Problem statement, success criteria</td></tr>
+												<tr><td>3</td><td>Stakeholder analysis</td><td>Business Understanding</td><td>Identified managers, finance, IT and supervisor and their needs</td><td>Stakeholder map</td></tr>
+												<tr><td>4</td><td>Requirements</td><td>Business Understanding</td><td>Ran structured consultations; captured functional and non-functional needs</td><td>Requirements and scope</td></tr>
+												<tr><td>5</td><td>As-is analysis</td><td>Data Understanding and Preparation</td><td>Profiled, cleaned and standardised historical data</td><td>Clean, integrated dataset</td></tr>
+												<tr><td>6</td><td>To-be design and gaps</td><td>Modelling</td><td>Designed the guided flow and calculation logic</td><td>Calculator design</td></tr>
+												<tr><td>7</td><td>Options and recommendation</td><td>Modelling / Deployment</td><td>Compared platforms; chose Streamlit</td><td>Platform recommendation</td></tr>
+												<tr><td>8</td><td>Implementation support</td><td>Modelling / Evaluation</td><td>Tested, fixed and refined iteratively</td><td>Working, validated tool</td></tr>
+												<tr><td>9</td><td>Evaluate and monitor</td><td>Evaluation / Deployment</td><td>Measured against success criteria; trained users</td><td>Evaluation findings, next steps</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>1. Understand the Business Context</h2>
+									<p>Mechapres helps industrial sites decarbonise steam production with high-temperature heat pumps. Its customers make large capital decisions, so each sale depends on a credible answer to one question: will this investment pay back, and when?</p>
+									<p>Key context I established:</p>
+									<ul>
+										<li><strong>Commercial pressure:</strong> tight margins mean small estimation errors affect pricing, profitability and competitiveness.</li>
+										<li><strong>Resource limits:</strong> as a small business, Mechapres has limited IT capacity and budget for enterprise systems.</li>
+										<li><strong>Decision-makers:</strong> the people using the outputs are often finance and operations leads, not engineers.</li>
+									</ul>
+
+									<h2>2. Define the Problem and Root Cause</h2>
+									<p><strong>Problem statement:</strong> Mechapres had no integrated, automated and interactive tool to turn its operational and financial data into timely, accurate feasibility decisions.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Symptom</th><th>Underlying cause</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Estimates took too long</td><td>Calculations done by hand, step by step</td></tr>
+												<tr><td>Errors in figures</td><td>Manual data entry and formulas</td></tr>
+												<tr><td>Similar sites got different answers</td><td>No standard calculation logic across people</td></tr>
+												<tr><td>Customers struggled to read outputs</td><td>Results were technical, not built for decision-makers</td></tr>
+											</tbody>
+										</table>
+									</div>
+									<p>All four symptoms traced back to one root cause: manual calculations spread across disconnected tools.</p>
+									<p><strong>Success criteria agreed with stakeholders:</strong></p>
+									<ol>
+										<li>More accurate, consistent estimates</li>
+										<li>Less time spent on calculations</li>
+										<li>One consistent set of data and logic</li>
+										<li>Outputs non-technical users can interpret</li>
+									</ol>
+
+									<h2>3. Stakeholder Analysis</h2>
+									<p>I identified four stakeholder groups and what each needed from the tool.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Stakeholder</th><th>Role in the project</th><th>Main need</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Project supervisor</td><td>Sponsor and subject-matter guide</td><td>Logic that matches the business’s decision tree and customer needs</td></tr>
+												<tr><td>Production managers</td><td>Users and validators</td><td>Accurate figures for resources and scenarios</td></tr>
+												<tr><td>Finance officers</td><td>Users and validators</td><td>Reliable investment metrics: payback, IRR, NPV</td></tr>
+												<tr><td>IT staff</td><td>Technical advisers</td><td>A tool that fits a small IT footprint</td></tr>
+											</tbody>
+										</table>
+									</div>
+									<p>Engaging these groups early meant the design reflected real working needs, which also built the trust needed for adoption.</p>
+
+									<h2>4. Requirements Elicitation</h2>
+									<p>I gathered requirements through structured consultations with stakeholders and through my supervisor’s ongoing design reviews.</p>
+									<p><strong>Functional requirements</strong></p>
+									<ul>
+										<li>Automate the core feasibility calculations from user inputs</li>
+										<li>Show results as low-case and high-case ranges, not single-point estimates</li>
+										<li>Report investment required, payback period, IRR, NPV and CO₂ reduction</li>
+										<li>Flag cases that fall below viability thresholds</li>
+										<li>Update all outputs instantly when an input changes</li>
+									</ul>
+									<p><strong>Non-functional requirements</strong></p>
+									<ul>
+										<li>Easy for non-technical users to use and understand</li>
+										<li>Transparent, traceable calculation logic</li>
+										<li>Simple to deploy and maintain with limited IT resources</li>
+									</ul>
+									<p><strong>Scope:</strong> internal operational and financial data only. ERP integration and external data sources were deliberately excluded to keep the project deliverable.</p>
+
+									<h2>5. Current State (As-Is) Analysis</h2>
+									<p>The current state was a manual workflow: gather site data, calculate by hand in separate tools, then assemble results for the customer. To understand its weaknesses, I analysed the data behind it.</p>
+									<ol>
+										<li><strong>Profiled the data:</strong> historical production, financial, material and labour records, using descriptive statistics (mean, median, standard deviation, range).</li>
+										<li><strong>Explored it visually:</strong> histograms, boxplots and scatterplots to spot outliers, skew and trends.</li>
+										<li><strong>Cleaned it:</strong> filled missing values with mean or median where appropriate, and separated real operational anomalies from data-entry errors.</li>
+										<li><strong>Integrated it:</strong> merged datasets held in different formats, and standardised names, units and time periods.</li>
+										<li><strong>Engineered metrics:</strong> derived unit cost, material efficiency, labour productivity and utilisation rates.</li>
+									</ol>
+									<p><strong>Key finding:</strong> the data existed, but its inconsistent formats and manual handling were the main sources of delay and error.</p>
+
+									<h2>6. Future State (To-Be) Design and Gap Analysis</h2>
+									<p>The future state is one guided tool where inputs, calculations and results sit together and update instantly.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Gap (as-is)</th><th>Design response (to-be)</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Calculations done by hand</td><td>Rule-based, formula-driven logic in Python automates every calculation</td></tr>
+												<tr><td>Different logic per person</td><td>One standard calculation model for every case</td></tr>
+												<tr><td>Single-point estimates</td><td>Low-case and high-case ranges for all key metrics</td></tr>
+												<tr><td>Hard-to-read technical outputs</td><td>A nine-page guided flow (Welcome to Results), cleaner labels, no excess decimals</td></tr>
+												<tr><td>Irrelevant inputs confuse users</td><td>Conditional logic hides fuel inputs when an electric boiler or heat pump is selected</td></tr>
+												<tr><td>“When does it pay back?” unclear</td><td>A 10-year cash flow chart with break-even annotations</td></tr>
+												<tr><td>Weak options not obvious</td><td>Automatic flags when a case falls below viability thresholds</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>7. Options Evaluation and Recommendation</h2>
+									<p><strong>Recommendation: a lightweight, custom Python and Streamlit application.</strong> It met the requirements at the lowest cost and IT burden.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Option</th><th>Strengths</th><th>Weaknesses</th><th>Decision</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>Keep manual process</td><td>No new cost</td><td>Leaves every root cause in place</td><td>Rejected</td></tr>
+												<tr><td>Enterprise BI or ERP-integrated system</td><td>Powerful, scalable</td><td>High cost, complex, beyond a small IT team</td><td>Rejected for now</td></tr>
+												<tr><td>Custom Streamlit application</td><td>Fast to deploy, low cost, fully tailored, transparent logic</td><td>Depends on input data quality; no live system integration yet</td><td><strong>Recommended</strong></td></tr>
+											</tbody>
+										</table>
+									</div>
+									<p>Choosing a lightweight tool also kept integration open as a later phase, rather than a barrier to starting.</p>
+
+									<h2>8. Implementation Support</h2>
+									<p>I built the tool myself and refined it in short cycles, with stakeholder feedback after each round.</p>
+									<ul>
+										<li><strong>Validation:</strong> tested outputs against historical data and ran scenarios with changing production volume, material availability and labour allocation.</li>
+										<li><strong>Defect fixing:</strong> resolved session-state conflicts that were resetting users’ inputs.</li>
+										<li><strong>Usability refinement:</strong> removed technical parameter labels and excess decimals, and dropped early dynamic schematics that added clutter.</li>
+										<li><strong>Structural redesign:</strong> moved from a tab-based interface to a nine-page guided flow, with a consistent blue professional theme and responsive typography.</li>
+										<li><strong>Documentation:</strong> kept clear code comments on every calculation section so the logic stays traceable and maintainable.</li>
+										<li><strong>Deployment and training:</strong> deployed on Streamlit and trained managers and staff to use the tool and interpret its metrics.</li>
+									</ul>
+
+									<h2>9. Evaluation and Monitoring</h2>
+									<p>The tool met all four success criteria, based on quantitative testing, structured user tests with managers and finance officers, and monitoring after deployment.</p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr><th>Success criterion</th><th>Evidence</th><th>Result</th></tr>
+											</thead>
+											<tbody>
+												<tr><td>More accurate, consistent estimates</td><td>Outputs matched historical data; one logic applied to every case</td><td>Met</td></tr>
+												<tr><td>Less time on calculations</td><td>Post-deployment monitoring showed reduced manual calculation time</td><td>Met</td></tr>
+												<tr><td>One consistent set of data and logic</td><td>Integrated, standardised dataset and single calculation model</td><td>Met</td></tr>
+												<tr><td>Outputs non-technical users can read</td><td>User tests rated visuals and summaries as clear and relevant</td><td>Met</td></tr>
+											</tbody>
+										</table>
+									</div>
+
+									<h2>Conclusion</h2>
+									<p>A structured BA process turned a slow, inconsistent manual task into a trusted, customer-facing decision tool, without enterprise systems or large investment.</p>
+									<p><strong>Lessons learned</strong></p>
+									<ul>
+										<li>Defining the root cause and success criteria first kept the build focused on what mattered.</li>
+										<li>Early stakeholder involvement drove adoption as much as the calculations did.</li>
+										<li>Usability is a requirement, not a finish: simplifying the interface repeatedly made the tool usable by customers.</li>
+										<li>Outputs are only as reliable as the input data, so data preparation deserved the time it took.</li>
+									</ul>
+									<p><strong>Next steps</strong></p>
+									<ul>
+										<li>Connect real-time data feeds</li>
+										<li>Add predictive or optimisation models</li>
+										<li>Integrate with ERP and external data sources</li>
+									</ul>
+
+									<h2>Live Dashboard</h2>
+									<ul>
+										<li><a href="https://mechapres-dashboard-nntjrpu6ecrwzjwqohjhwr.streamlit.app/" target="_blank" rel="noopener noreferrer">Try the Mechapres Heat Pump Feasibility Dashboard</a></li>
 										<li><a href="https://github.com/DennisDarkwa1/mechapres-dashboard" target="_blank" rel="noopener noreferrer">View the source code on GitHub</a></li>
 									</ul>
-									<h2>Approach Used</h2>
-									<p>The project used the CRISP-DM business analytics methodology to develop and evaluate an interactive dashboard calculator for Mechapres.</p>
-									<p>The project followed five main stages:</p>
-									<ol>
-										<li><strong>Business understanding</strong><br />
-										The project identified Mechapres’ operational problems, particularly manual cost calculations, fragmented data, inconsistent reporting, and delays in decision-making.</li>
-										<li><strong>Data understanding and preparation</strong><br />
-										Historical production, financial, material, labour, and machine-use data were collected and examined. The data was cleaned, missing values and inconsistencies were addressed, and new measures such as unit production cost and resource-utilisation rates were created.</li>
-										<li><strong>Modelling and dashboard development</strong><br />
-										Formula-based and rule-based calculations were developed for production costs, material consumption, labour allocation, machine utilisation, savings, payback period, and other performance indicators. These calculations were incorporated into an interactive dashboard with filters, input fields, tables, and visualisations.</li>
-										<li><strong>Evaluation</strong><br />
-										The dashboard was tested for computational accuracy, reliability, responsiveness, and usability. Its outputs were compared with historical data, while user testing and feedback were used to assess whether it met the needs of production and finance staff.</li>
-										<li><strong>Deployment</strong><br />
-										The final dashboard was implemented using Streamlit, a Python-based web application framework. Users were introduced to the system, and its effectiveness was assessed based on reduced manual calculation time, improved reporting consistency, and better access to operational information.</li>
-									</ol>
-									<h2>Key Findings</h2>
-									<ul>
-										<li><strong>Improved cost estimation:</strong> The dashboard automatically calculated total production cost, unit cost, material costs, labour costs, and other operational expenses more consistently.</li>
-										<li><strong>Reduced manual effort and errors:</strong> Automating calculations reduced dependence on spreadsheets and manual processes, helping to minimise calculation errors and delays.</li>
-										<li><strong>Better resource monitoring:</strong> The tool provided clearer information about material consumption, labour allocation, and machine utilisation, making it easier to identify inefficient resource use.</li>
-										<li><strong>Faster decision-making:</strong> Managers could change inputs and immediately view updated results, allowing them to assess different production volumes, material costs, labour requirements, and operational scenarios.</li>
-										<li><strong>Improved data visibility:</strong> Previously fragmented operational and financial information was consolidated into one interactive dashboard, creating a more accessible source of information for decision-makers.</li>
-										<li><strong>Scenario and investment analysis:</strong> The dashboard supported low-case and high-case analysis and generated indicators such as estimated savings, investment requirements, payback period, internal rate of return, net present value, and potential carbon-emission reductions.</li>
-										<li><strong>Improved reporting consistency:</strong> Standardised calculations and visual outputs made reports easier to understand and compare across production periods or operating conditions.</li>
-										<li><strong>Positive user response:</strong> Testing with production and finance users indicated that the dashboard was considered relevant, understandable, and useful for operational planning and management decisions.</li>
-										<li><strong>Practical suitability for SMEs:</strong> The use of Streamlit demonstrated that a relatively simple, Python-based dashboard could provide useful decision-support capabilities without requiring a large enterprise system or full ERP integration.</li>
-									</ul>
-									<h2>Project Outcome</h2>
-									<p>The project outcome was the successful development of an interactive dashboard calculator for Mechapres using Streamlit and the CRISP-DM methodology.</p>
-									<p>The dashboard brought together production, material, labour, machine, and financial information in one system. It automated important calculations, including:</p>
-									<ul>
-										<li>Total production cost and cost per unit.</li>
-										<li>Material consumption and utilisation.</li>
-										<li>Labour allocation and productivity.</li>
-										<li>Machine utilisation.</li>
-										<li>Estimated savings and investment requirements.</li>
-										<li>Payback period, internal rate of return, and net present value.</li>
-										<li>Potential carbon-emission reductions.</li>
-									</ul>
-									<p>The project also showed that the dashboard could provide faster, more consistent, and more transparent operational information than manual calculations. Users could adjust inputs and immediately view updated results, making it easier to compare scenarios and support production and investment decisions.</p>
 								</div>
 
 								<hr />
